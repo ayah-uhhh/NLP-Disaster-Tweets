@@ -3,6 +3,7 @@
 
 # # Import the Dataset
 import pandas as pd
+import re
 
 df_train = pd.read_csv('dataset/train.csv')
 df_test = pd.read_csv('dataset/test.csv')
@@ -49,6 +50,11 @@ def clean_data(dataframe):
     
     #
     # End section for removing stopwords
+
+
+# Remove non-alphanumeric characters and numbers
+    for i in df_test.index:
+        dataframe.loc[i,'text'] = re.sub(r'[^A-Za-z ]+','', df_test['text'][i])
 
 
 clean_data(df_train)
