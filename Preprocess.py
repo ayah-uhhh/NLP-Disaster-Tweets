@@ -43,3 +43,7 @@ clean_data(df_test)
 
 sample = df_test.sample(n=5)
 print(sample)
+
+# Save the cleaned data as CSV
+df_train.to_csv('dataset/cleaned_train.csv', index=False)
+df_test.to_csv('dataset/cleaned_test.csv', index=False)
