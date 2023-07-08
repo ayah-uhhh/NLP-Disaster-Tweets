@@ -2,6 +2,8 @@ import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import pandas as pd
+import keras
+from keras import layers
 
 
 #Understand RNN performance
@@ -14,7 +16,8 @@ def plot_graphs(history, metric):
 
 
 #Import Data
-test_data = pd.read_csv(cleaned_test.csv)
+test_data = pd.read_csv('dataset/cleaned_test.csv')
+train_data = pd.read_csv('dataset/cleaned_train.csv')
 
 #bidirectional RNN: this allows context to be gained before and after words
 
