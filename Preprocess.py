@@ -21,6 +21,10 @@ def clean_data(dataframe):
     # Convert location and text to lowercase
     dataframe['location'] = dataframe['location'].str.lower()
     dataframe['text'] = dataframe['text'].str.lower()
+    dataframe['keyword'] = dataframe['keyword'].str.lower()
+    
+    # Remove the extra comma in rows 1-44
+    dataframe.loc[1:44, 'keyword'] = dataframe.loc[1:44, 'keyword'].str.rstrip(',')
 
     # Remove URLs, numbers, and non-alphanumeric characters
     dataframe['text'] = dataframe['text'].apply(lambda x: re.sub(r'http[s]?://\S+|[^A-Za-z ]|\d+', ' ', str(x)))
