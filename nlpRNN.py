@@ -3,6 +3,8 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 import pandas as pd
 import keras
+from keras.preprocessing.text import Tokenizer
+from keras.utils import pad_sequences 
 from keras import layers
 import time
 from sklearn.model_selection import train_test_split
@@ -25,14 +27,20 @@ def nlp_rnn(optimizer='rmsprop', units=64, input_shape=(5, 10), show_chart=False
     train_data = pd.read_csv('dataset/cleaned_train.csv')
     
     # Extract X and Y from train_data
-    X = train_data[['keyword', 'location', 'text']].values
+    X = train_data[ 'text'].values
     Y = train_data['target'].values
+# Tokenize the text
+    tokenizer = Tokenizer()
+    tokenizer.fit_on_texts(X)
+    X_sequences = tokenizer.texts_to_sequences(X)
+
+    # Pad the sequences
+    X_padded = pad_sequences(X_sequences, maxlen=input_shape[1])
 
     print("Splitting data...")
     # Split the data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(
-        X, Y, test_size=0.2, shuffle=False)
-
+        X_padded, Y, test_size=0.2, shuffle=False)
     print("Building model...")
     start_time = time.time()
     # Define the model
