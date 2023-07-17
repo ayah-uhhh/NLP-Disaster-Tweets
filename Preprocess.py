@@ -17,7 +17,7 @@ df_test = pd.read_csv('dataset/test.csv')
 
 # # Cleaning the Text
 
-def clean_data(dataframe):
+def clean_data(dataframe, stop = True):
     # Convert location and text to lowercase
     dataframe['location'] = dataframe['location'].str.lower()
     dataframe['text'] = dataframe['text'].str.lower()
@@ -34,8 +34,9 @@ def clean_data(dataframe):
     dataframe['text'] = dataframe['text'].apply(lambda x: word_tokenize(str(x)))
 
     # Remove stopwords
-    stopwords=nltk.corpus.stopwords.words('english')
-    dataframe['text'] = dataframe['text'].apply(lambda x: ' '.join([word for word in x if word not in stopwords])) # dataframe['location'] = dataframe['location'].apply(lambda x: ' '.join([word for word in x.split() if word not in stopwords]))
+    if stop:
+        stopwords=nltk.corpus.stopwords.words('english')
+        dataframe['text'] = dataframe['text'].apply(lambda x: ' '.join([word for word in x if word not in stopwords])) # dataframe['location'] = dataframe['location'].apply(lambda x: ' '.join([word for word in x.split() if word not in stopwords]))
     
     # Lemmatization (normalization)
     lemmatizer=WordNetLemmatizer()
@@ -49,10 +50,11 @@ def clean_data(dataframe):
 # Clean the text
 clean_data(df_train)
 clean_data(df_test)
-
+#clean_data(df_train, False)
+#clean_data(df_test, False)
 sample = df_test.sample(n=5)
 print(sample)
 
 # Save the cleaned data as CSV
-df_train.to_csv('dataset/cleaned_train.csv', index=False)
-df_test.to_csv('dataset/cleaned_test.csv', index=False)
+df_train.to_csv('dataset/cleaned_train_stop.csv', index=False)
+df_test.to_csv('dataset/cleaned_test_stop.csv', index=False)
