@@ -3,7 +3,7 @@ import time
 import multiprocessing as mp
 from nlpRNN import nlp_rnn
 
-if _name_ == '_main_':
+if __name__ == '__main__':
     
     print("finding optimized parameters...")
     
