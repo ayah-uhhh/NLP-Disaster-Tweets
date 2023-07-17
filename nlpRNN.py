@@ -9,14 +9,6 @@ from keras import layers
 import time
 from sklearn.model_selection import train_test_split
 
-#Understand RNN performance
-def plot_graphs(history, metric):
-    plt.plot(history.history[metric])
-    plt.plot(history.history['val_'+metric], '')
-    plt.xlabel("Epochs")
-    plt.ylabel(metric)
-    plt.legend([metric, 'val_'+metric])
-
 #Import Data
 # test_data = pd.read_csv('dataset/cleaned_test.csv')
 # train_data = pd.read_csv('dataset/cleaned_train.csv')
@@ -100,4 +92,4 @@ def nlp_rnn(optimizer='adam', units=128, input_shape=(10,1), show_chart=True, sa
 
 
 nlp_rnn()
-plot_graphs()
+
