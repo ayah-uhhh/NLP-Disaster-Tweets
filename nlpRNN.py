@@ -21,11 +21,11 @@ def plot_graphs(history, metric):
 # test_data = pd.read_csv('dataset/cleaned_test.csv')
 # train_data = pd.read_csv('dataset/cleaned_train.csv')
 
-def nlp_rnn(optimizer='rmsprop', units=64, input_shape=(5, 10), show_chart=False, save=False, epochs=150, batch_size=32):
+def nlp_rnn(optimizer='rmsprop', units=128, input_shape=(10,1), show_chart=False, save=False, epochs=200, batch_size=32):
     """Import Data"""
     start_time = time.time()
     train_data = pd.read_csv('dataset/cleaned_train.csv')
-    
+
     # Extract X and Y from train_data
     X = train_data[ 'text'].values
     Y = train_data['target'].values
@@ -35,12 +35,15 @@ def nlp_rnn(optimizer='rmsprop', units=64, input_shape=(5, 10), show_chart=False
     X_sequences = tokenizer.texts_to_sequences(X)
 
     # Pad the sequences
-    X_padded = pad_sequences(X_sequences, maxlen=input_shape[1])
+    X_padded = pad_sequences(X_sequences, maxlen=input_shape[0])
 
     print("Splitting data...")
     # Split the data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(
         X_padded, Y, test_size=0.2, shuffle=False)
+    # xtrain shape: (6090, 10)
+    # xTest shape: (1523, 10)
+    
     print("Building model...")
     start_time = time.time()
     # Define the model
@@ -48,21 +51,22 @@ def nlp_rnn(optimizer='rmsprop', units=64, input_shape=(5, 10), show_chart=False
 
     # Bidirectional LSTM layers
     model.add(layers.Bidirectional(layers.LSTM(units, return_sequences=True), input_shape=input_shape))
+    model.add(layers.Bidirectional(layers.LSTM(units, return_sequences=True)))
     model.add(layers.Bidirectional(layers.LSTM(units)))
-    model.add(layers.Dense(7, activation='softmax'))
+    model.add(layers.Dense(1, activation='sigmoid'))
 
     # Compile the model
-    model.compile(loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False),
+    model.compile(loss=tf.keras.losses.BinaryCrossentropy(),
                   optimizer=optimizer, metrics=['accuracy'])
 
     print("Built model. (%.2f)", time.time()-start_time)
 
-    model.summary()
+    #model.summary()
     # Train the model
     print("Training model...")
     history = model.fit(X_train, y_train, epochs, batch_size,
                         validation_data=(X_test, y_test))
-    print("Model trained. (%.2f)", time.time()-start_time)
+    print("Model trained.", time.time()-start_time,"seconds")
 
     elapsed_time = time.time()-start_time
 
@@ -82,10 +86,10 @@ def nlp_rnn(optimizer='rmsprop', units=64, input_shape=(5, 10), show_chart=False
         print("Saving model...")
         start_time = time.time()
         model.save('ps_rnn_model.h5')
-        print("Saved model (%.2fs)", time.time()-start_time)
+        print("Saved model {%.2fs}".format(time.time()-start_time))
 
-    print('Accuracy: %.2f', (accuracy*100))
-    print("Loss: %s", loss)
+    print('Accuracy:', (accuracy*100),"%")
+    #print("Loss:", loss, "%")
 
     return [(optimizer, units, input_shape), elapsed_time, loss, accuracy, model]
 
