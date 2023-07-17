@@ -21,7 +21,7 @@ def plot_graphs(history, metric):
 # test_data = pd.read_csv('dataset/cleaned_test.csv')
 # train_data = pd.read_csv('dataset/cleaned_train.csv')
 
-def nlp_rnn(optimizer='rmsprop', units=128, input_shape=(10,1), show_chart=False, save=False, epochs=200, batch_size=32):
+def nlp_rnn(optimizer='adam', units=128, input_shape=(10,1), show_chart=True, save=False, epochs=200, batch_size=32):
     """Import Data"""
     start_time = time.time()
     train_data = pd.read_csv('dataset/cleaned_train.csv')
@@ -51,22 +51,27 @@ def nlp_rnn(optimizer='rmsprop', units=128, input_shape=(10,1), show_chart=False
 
     # Bidirectional LSTM layers
     model.add(layers.Bidirectional(layers.LSTM(units, return_sequences=True), input_shape=input_shape))
+    model.add(layers.Dropout(0.5))
     model.add(layers.Bidirectional(layers.LSTM(units, return_sequences=True)))
+    model.add(layers.Dropout(0.5))
+    model.add(layers.Bidirectional(layers.LSTM(units, return_sequences=True), input_shape=input_shape))
+    model.add(layers.Dropout(0.5))
     model.add(layers.Bidirectional(layers.LSTM(units)))
+    model.add(layers.Dropout(0.5))
     model.add(layers.Dense(1, activation='sigmoid'))
 
     # Compile the model
     model.compile(loss=tf.keras.losses.BinaryCrossentropy(),
                   optimizer=optimizer, metrics=['accuracy'])
 
-    print("Built model. (%.2f)", time.time()-start_time)
+    print("Built model. {}".format(time.time()-start_time))
 
     #model.summary()
     # Train the model
     print("Training model...")
     history = model.fit(X_train, y_train, epochs, batch_size,
                         validation_data=(X_test, y_test))
-    print("Model trained.", time.time()-start_time,"seconds")
+    print("Model trained.{}".format(time.time()-start_time),"seconds")
 
     elapsed_time = time.time()-start_time
 
@@ -86,7 +91,7 @@ def nlp_rnn(optimizer='rmsprop', units=128, input_shape=(10,1), show_chart=False
         print("Saving model...")
         start_time = time.time()
         model.save('ps_rnn_model.h5')
-        print("Saved model {%.2fs}".format(time.time()-start_time))
+        print("Saved model {}".format(time.time()-start_time))
 
     print('Accuracy:', (accuracy*100),"%")
     #print("Loss:", loss, "%")
@@ -95,3 +100,4 @@ def nlp_rnn(optimizer='rmsprop', units=128, input_shape=(10,1), show_chart=False
 
 
 nlp_rnn()
+plot_graphs()
