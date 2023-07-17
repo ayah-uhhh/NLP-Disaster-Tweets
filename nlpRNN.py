@@ -16,7 +16,7 @@ from sklearn.model_selection import train_test_split
 def nlp_rnn(optimizer='adam', units=128, input_shape=(10,1), show_chart=True, save=False, epochs=200, batch_size=32):
     """Import Data"""
     start_time = time.time()
-    train_data = pd.read_csv('dataset/cleaned_train.csv')
+    train_data = pd.read_csv('dataset/cleaned_train_stop.csv')
 
     # Extract X and Y from train_data
     X = train_data[ 'text'].values
@@ -70,6 +70,7 @@ def nlp_rnn(optimizer='adam', units=128, input_shape=(10,1), show_chart=True, sa
     if (show_chart):
         plt.plot(history.history['accuracy'], label='accuracy')
         plt.plot(history.history['val_accuracy'], label='val_accuracy')
+        plt.title('RNN Classification: Cleaned and Stopwords Included')
         plt.xlabel('Epoch')
         plt.ylabel('Accuracy')
         plt.ylim([0.5, 1])
