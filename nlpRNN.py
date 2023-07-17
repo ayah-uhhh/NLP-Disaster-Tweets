@@ -13,7 +13,7 @@ from sklearn.model_selection import train_test_split
 # test_data = pd.read_csv('dataset/cleaned_test.csv')
 # train_data = pd.read_csv('dataset/cleaned_train.csv')
 
-def nlp_rnn(optimizer='adam', units=128, input_shape=(10,1), show_chart=True, save=False, epochs=200, batch_size=32):
+def nlp_rnn(optimizer='adam', units=128, input_shape=(10,1), show_chart=False, save=False, epochs=200, batch_size=32):
     """Import Data"""
     start_time = time.time()
     train_data = pd.read_csv('dataset/cleaned_train_stop.csv')
@@ -75,7 +75,7 @@ def nlp_rnn(optimizer='adam', units=128, input_shape=(10,1), show_chart=True, sa
         plt.ylabel('Accuracy')
         plt.ylim([0.5, 1])
         plt.legend(loc='lower right')
-        plt.show()
+        plt.show()   
 
     # Evaluate the model
     loss, accuracy = model.evaluate(X_test, y_test, verbose=0)
