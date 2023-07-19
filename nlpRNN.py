@@ -8,14 +8,38 @@ from keras.utils import pad_sequences
 from keras import layers
 import time
 from sklearn.model_selection import train_test_split
+"""
+    Run the RNN model for binary classification.
+    
+    Parameters:
+        - dataset: The dataset to use for training and testing. 
+            Options: 'cleaned_train_stop.csv', 'cleaned_train.csv', 'train.csv' 
+            (default: 'cleaned_train_stop.csv')
+        - optimizer: The optimizer to use for training. 
+            Options: 'adam', 'sgd' (default: 'adam')
+        - units: The number of units in the LSTM layers. Increasing the number of units can allow the model 
+            to learn more complex patterns but may increase training time and memory requirements. 
+            (default: 128)
+        - input_shape: The input shape of the LSTM layers (default: (10, 1))
+        - show_chart: Whether to show the accuracy chart during training (default: False)
+        - save: Whether to save the trained model in an h5 file. 
+            Can be used to make additional codes by loading the model 
+            (default: False)
+        - epochs: The number of training epochs. An epoch is a complete pass through the entire training dataset. 
+            Increasing the number of epochs can allow the model to converge to better performance, 
+            but too many epochs can lead to overfitting. (default: 100)
+        - batch_size: The batch size for training. The training dataset is divided into batches, 
+            and the model is updated after each batch. Smaller batch sizes may allow the model to generalize better, 
+            but training can be slower. (default: 64)
+    """
 
-#Import Data
-# test_data = pd.read_csv('dataset/cleaned_test.csv')
-# train_data = pd.read_csv('dataset/cleaned_train.csv')
 
-def nlp_rnn(optimizer='adam', units=128, input_shape=(10,1), show_chart=False, save=False, epochs=200, batch_size=32):
+
+def nlp_rnn(dataset = 'cleaned_train_stop.csv', optimizer='adam', units=128, input_shape=(10,1), show_chart=False, save=False, epochs=100, batch_size=64):
+    
     """Import Data"""
     start_time = time.time()
+    dataset_path = f'dataset/{dataset}'
     train_data = pd.read_csv('dataset/cleaned_train_stop.csv')
 
     # Extract X and Y from train_data
@@ -43,13 +67,13 @@ def nlp_rnn(optimizer='adam', units=128, input_shape=(10,1), show_chart=False, s
 
     # Bidirectional LSTM layers
     model.add(layers.Bidirectional(layers.LSTM(units, return_sequences=True), input_shape=input_shape))
-    model.add(layers.Dropout(0.5))
+    #model.add(layers.Dropout(0.5))
     model.add(layers.Bidirectional(layers.LSTM(units, return_sequences=True)))
-    model.add(layers.Dropout(0.5))
+    #model.add(layers.Dropout(0.5))
     model.add(layers.Bidirectional(layers.LSTM(units, return_sequences=True), input_shape=input_shape))
-    model.add(layers.Dropout(0.5))
+    #model.add(layers.Dropout(0.5))
     model.add(layers.Bidirectional(layers.LSTM(units)))
-    model.add(layers.Dropout(0.5))
+    #model.add(layers.Dropout(0.5))
     model.add(layers.Dense(1, activation='sigmoid'))
 
     # Compile the model
@@ -58,12 +82,12 @@ def nlp_rnn(optimizer='adam', units=128, input_shape=(10,1), show_chart=False, s
 
     print("Built model. {}".format(time.time()-start_time))
 
-    #model.summary()
+    model.summary()
     # Train the model
     print("Training model...")
-    history = model.fit(X_train, y_train, epochs, batch_size,
+    history = model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size,
                         validation_data=(X_test, y_test))
-    print("Model trained.{}".format(time.time()-start_time),"seconds")
+    print("Model trained: {}".format(time.time()-start_time),"seconds")
 
     elapsed_time = time.time()-start_time
 
