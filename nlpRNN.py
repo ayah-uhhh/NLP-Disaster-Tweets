@@ -16,18 +16,20 @@ from sklearn.model_selection import train_test_split
             Options: 'cleaned_train_stop.csv', 'cleaned_train.csv', 'train.csv' 
             (default: 'cleaned_train_stop.csv')
         - optimizer: The optimizer to use for training. 
-            Options: 'adam', 'sgd' (default: 'adam')
+            Options: 'adam', 'sgd', 'relu', 'tanh' (default: 'adam')
         - units: The number of units in the LSTM layers. Increasing the number of units can allow the model 
             to learn more complex patterns but may increase training time and memory requirements. 
             (default: 128)
         - input_shape: The input shape of the LSTM layers (default: (10, 1))
+        -dropout_rate: Dropout is a regularization technique that helps prevent overfitting. It randomly sets a fraction of input units
+            to 0 during training. Can be between 0.0 and 1.0 (default: 0.0)
         - show_chart: Whether to show the accuracy chart during training (default: False)
         - save: Whether to save the trained model in an h5 file. 
             Can be used to make additional codes by loading the model 
             (default: False)
         - epochs: The number of training epochs. An epoch is a complete pass through the entire training dataset. 
             Increasing the number of epochs can allow the model to converge to better performance, 
-            but too many epochs can lead to overfitting. (default: 100)
+            but too many epochs can lead to overfitting. (default: 20)
         - batch_size: The batch size for training. The training dataset is divided into batches, 
             and the model is updated after each batch. Smaller batch sizes may allow the model to generalize better, 
             but training can be slower. (default: 64)
@@ -35,12 +37,12 @@ from sklearn.model_selection import train_test_split
 
 
 
-def nlp_rnn(dataset = 'cleaned_train_stop.csv', optimizer='adam', units=128, input_shape=(10,1), show_chart=False, save=False, epochs=100, batch_size=64):
+def nlp_rnn(dataset = 'cleaned_train_stop.csv', optimizer='adam', units=128, input_shape=(10,1), dropout_rate = 0.1, show_chart=False, save=False, epochs=20, batch_size=64):
     
     """Import Data"""
     start_time = time.time()
     dataset_path = f'dataset/{dataset}'
-    train_data = pd.read_csv('dataset/cleaned_train_stop.csv')
+    train_data = pd.read_csv(dataset_path)
 
     # Extract X and Y from train_data
     X = train_data[ 'text'].values
@@ -67,13 +69,13 @@ def nlp_rnn(dataset = 'cleaned_train_stop.csv', optimizer='adam', units=128, inp
 
     # Bidirectional LSTM layers
     model.add(layers.Bidirectional(layers.LSTM(units, return_sequences=True), input_shape=input_shape))
-    #model.add(layers.Dropout(0.5))
+    model.add(layers.Dropout(dropout_rate))
     model.add(layers.Bidirectional(layers.LSTM(units, return_sequences=True)))
-    #model.add(layers.Dropout(0.5))
+    model.add(layers.Dropout(dropout_rate))
     model.add(layers.Bidirectional(layers.LSTM(units, return_sequences=True), input_shape=input_shape))
-    #model.add(layers.Dropout(0.5))
+    model.add(layers.Dropout(dropout_rate))
     model.add(layers.Bidirectional(layers.LSTM(units)))
-    #model.add(layers.Dropout(0.5))
+    model.add(layers.Dropout(dropout_rate))
     model.add(layers.Dense(1, activation='sigmoid'))
 
     # Compile the model
