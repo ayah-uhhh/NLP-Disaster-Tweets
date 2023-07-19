@@ -1,4 +1,3 @@
-import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -37,7 +36,7 @@ from sklearn.model_selection import train_test_split
 
 
 
-def nlp_rnn(dataset = 'cleaned_train_stop.csv', optimizer='adam', units=128, input_shape=(10,1), dropout_rate = 0.1, show_chart=False, save=False, epochs=20, batch_size=64):
+def nlp_rnn(dataset = 'cleaned_train_stop.csv', optimizer='adam', units=256, input_shape=(10,1), dropout_rate = 0.5, show_chart=False, save=False, epochs=40, batch_size=64):
     
     """Import Data"""
     start_time = time.time()
