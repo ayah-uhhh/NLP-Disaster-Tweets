@@ -58,7 +58,7 @@ def nlp_rnn_unlabeled(dataset='test.csv', optimizer='adam', units=256, input_sha
     predictions = model.predict(X_padded, batch_size=batch_size)
 
     # Prepare the results for writing to CSV
-    results = [(i, int(round(prediction[0]))) for i, prediction in enumerate(predictions)]
+    results = [(train_data['id'].values[i], int(round(prediction[0]))) for i, prediction in enumerate(predictions)]
 
     # Write the results to a CSV file
     with open('results.csv', 'w', newline='') as file:
