@@ -9,9 +9,12 @@ from keras import layers
 import time
 import csv
 """
-    Run the RNN model for binary classification. Blind, no labels. Make sure parameters match the ideal parameters form nlpRNN
+    Run the RNN model for binary classification. Blind, no labels.
     
     - dataset options: 'test.csv' , 'cleaned_test.csv' , 'cleaned_test_stop.csv'
+    
+    If you want to change the parameters, you must first run nlpRNN with your prefered settings. 
+    This code will load the model from nlpRNN
 """
 def nlp_rnn_unlabeled(dataset='test.csv', dropout_rate=0.5, batch_size=64, input_shape=(10,1)):
     start_time = time.time()
