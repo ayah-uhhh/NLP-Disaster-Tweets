@@ -36,7 +36,7 @@ from sklearn.model_selection import train_test_split
 
 
 
-def nlp_rnn(dataset = 'cleaned_train_stop.csv', optimizer='adam', units=256, input_shape=(10,1), dropout_rate = 0.5, show_chart=False, save=False, epochs=40, batch_size=64):
+def nlp_rnn(dataset = 'cleaned_train_stop.csv', optimizer='adam', units=128, input_shape=(10,1), dropout_rate = 0.2, show_chart=False, save=True, epochs=20, batch_size=64):
     
     """Import Data"""
     start_time = time.time()
@@ -108,13 +108,13 @@ def nlp_rnn(dataset = 'cleaned_train_stop.csv', optimizer='adam', units=256, inp
     if save:
         print("Saving model...")
         start_time = time.time()
-        model.save('ps_rnn_model.h5')
+        model.save('saved_rnn_model.h5')
         print("Saved model {}".format(time.time()-start_time))
 
     print('Accuracy:', (accuracy*100),"%")
     #print("Loss:", loss, "%")
 
-    return [(optimizer, units, input_shape), elapsed_time, loss, accuracy, model]
+    return [(optimizer, units, input_shape, epochs, dropout_rate), elapsed_time, loss, accuracy, model]
 
 
 nlp_rnn()

@@ -2,7 +2,7 @@
 import time
 import multiprocessing as mp
 from nlpRNN import nlp_rnn
-
+from decimal import *
 if __name__ == '__main__':
     
     print("finding optimized parameters...")
@@ -13,10 +13,13 @@ if __name__ == '__main__':
     
     best_accuracy = 0
     optimizer = ['rmsprop', 'sgd', 'adam']
+    decimal_range = [Decimal(x) / 10 for x in range(11)]
     for i in range(3):
         for j in range(100,500, 50):
-            results = [pool.apply_async(
-                nlp_rnn, args=([optimizer[i], 128, (10,1), False, False, j, 32]))]
+            #for k in range(0.0,1.0,0.1):
+            for k in decimal_range:
+                results = [pool.apply_async(
+                    nlp_rnn, args=(['cleaned_train_stop.csv', optimizer[i], 256, (10,1), k, False, False, j, 64]))]
 
     pool.close()
 
@@ -32,6 +35,8 @@ if __name__ == '__main__':
             best_optimizer = x[0][0]
             best_units = x[0][1]
             best_input_shape = x[0][2]
+            best_epochs = x[0][3]
+            best_dropout_rate = x[0][4]
             model = x[4]
 
         if best_params is not None:
