@@ -16,7 +16,7 @@ import csv
     If you want to change the parameters, you must first run nlpRNN with your prefered settings. 
     This code will load the model from nlpRNN
 """
-def nlp_rnn_unlabeled(dataset='test.csv', dropout_rate=0.5, batch_size=64, input_shape=(10,1)):
+def nlp_rnn_unlabeled(dataset='cleaned_test_stop.csv', dropout_rate=0.5, batch_size=32, input_shape=(10,1)):
     start_time = time.time()
     dataset_path = f'dataset/{dataset}'
     train_data = pd.read_csv(dataset_path)

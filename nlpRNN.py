@@ -25,7 +25,7 @@ from sklearn.model_selection import train_test_split
         - show_chart: Whether to show the accuracy chart during training (default: False)
         - save: Whether to save the trained model in an h5 file. 
             Can be used to make additional codes by loading the model 
-            (default: False)
+            (default: True)
         - epochs: The number of training epochs. An epoch is a complete pass through the entire training dataset. 
             Increasing the number of epochs can allow the model to converge to better performance, 
             but too many epochs can lead to overfitting. (default: 20)
@@ -36,7 +36,7 @@ from sklearn.model_selection import train_test_split
 
 
 
-def nlp_rnn(dataset = 'cleaned_train_stop.csv', optimizer='adam', units=128, input_shape=(10,1), dropout_rate = 0.2, show_chart=False, save=True, epochs=20, batch_size=64):
+def nlp_rnn(dataset = 'cleaned_train_stop.csv', optimizer='adam', units=256, input_shape=(10,1), dropout_rate = 0.5, show_chart=True, save=True, epochs=40, batch_size=64):
     
     """Import Data"""
     start_time = time.time()
@@ -51,13 +51,15 @@ def nlp_rnn(dataset = 'cleaned_train_stop.csv', optimizer='adam', units=128, inp
     tokenizer.fit_on_texts(X)
     X_sequences = tokenizer.texts_to_sequences(X)
 
+    vocab_size = len(tokenizer.word_index) + 1
+    
     # Pad the sequences
     X_padded = pad_sequences(X_sequences, maxlen=input_shape[0])
 
     print("Splitting data...")
     # Split the data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(
-        X_padded, Y, test_size=0.2, shuffle=False)
+        X_padded, Y, test_size=0.2, shuffle=True)
     # xtrain shape: (6090, 10)
     # xTest shape: (1523, 10)
     
@@ -66,24 +68,33 @@ def nlp_rnn(dataset = 'cleaned_train_stop.csv', optimizer='adam', units=128, inp
     # Define the model
     model = keras.Sequential()
 
+    # Add an Embedding layer to convert integer-encoded words into dense vectors
+    vocab_size = len(tokenizer.word_index) + 1
+    model.add(layers.Embedding(input_dim=vocab_size, output_dim=100, input_length=input_shape[0]))
+
     # Bidirectional LSTM layers
-    model.add(layers.Bidirectional(layers.LSTM(units, return_sequences=True), input_shape=input_shape))
-    model.add(layers.Dropout(dropout_rate))
     model.add(layers.Bidirectional(layers.LSTM(units, return_sequences=True)))
     model.add(layers.Dropout(dropout_rate))
-    model.add(layers.Bidirectional(layers.LSTM(units, return_sequences=True), input_shape=input_shape))
-    model.add(layers.Dropout(dropout_rate))
+    # model.add(layers.Bidirectional(layers.LSTM(units, return_sequences=True)))
+    # model.add(layers.Dropout(dropout_rate))
+    # model.add(layers.Bidirectional(layers.LSTM(units, return_sequences=True)))
+    # model.add(layers.Dropout(dropout_rate))
     model.add(layers.Bidirectional(layers.LSTM(units)))
     model.add(layers.Dropout(dropout_rate))
+
+    # Add the Dense output layer
     model.add(layers.Dense(1, activation='sigmoid'))
 
     # Compile the model
     model.compile(loss=tf.keras.losses.BinaryCrossentropy(),
                   optimizer=optimizer, metrics=['accuracy'])
-
+    
+    # Build the model before printing the summary
+    #model.build(input_shape=input_shape)
+    model.summary()
+    
     print("Built model. {}".format(time.time()-start_time))
 
-    model.summary()
     # Train the model
     print("Training model...")
     history = model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size,
